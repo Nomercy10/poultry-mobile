@@ -1,0 +1,13 @@
+{
+  "name": "poultry-demo-backend",
+  "private": true,
+  "description": "Runs the web repo's backend against a throwaway local Postgres seeded with demo data. Dev tool only; not part of the app.",
+  "type": "module",
+  "scripts": {
+    "start": "node start.mjs",
+    "reset": "node start.mjs --reset"
+  },
+  "dependencies": {
+    "embedded-postgres": "17.11.0-beta.19"
+  }
+}

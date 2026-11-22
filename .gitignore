@@ -41,3 +41,10 @@ example
 # generated native folders
 /ios
 /android
+
+# demo backend tool (local Postgres data)
+tools/demo-backend/.data/
+tools/demo-backend/.seeded
+
+# local env
+.env
