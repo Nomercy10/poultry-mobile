@@ -1,3 +1,6 @@
+import i18n from '@/i18n';
+import { languageInfo } from '@/i18n/languages';
+
 // Farm records are per calendar day. The backend stores exact timestamps and the
 // web seed uses local midnight, so the phone sends local midnight too: that
 // keeps "one egg entry per farm per day" working across web and phone.
@@ -33,13 +36,24 @@ export function daysBetween(from: Date, to: Date): number {
   return Math.round((startOfLocalDay(to).getTime() - startOfLocalDay(from).getTime()) / 86_400_000);
 }
 
-const dayMonth = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' });
-const dayMonthYear = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+const formatters = new Map<string, Intl.DateTimeFormat>();
 
-/** "23 Nov", or "23 Nov 2025" outside the current year. */
+function dayFormatter(withYear: boolean): Intl.DateTimeFormat {
+  // Month names follow the app language; digits stay Western (-u-nu-latn).
+  const locale = `${languageInfo(i18n.language ?? 'en').locale}-u-nu-latn`;
+  const key = `${locale}:${withYear}`;
+  let f = formatters.get(key);
+  if (!f) {
+    f = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', ...(withYear ? { year: 'numeric' } : {}) });
+    formatters.set(key, f);
+  }
+  return f;
+}
+
+/** "23 Nov", or "23 Nov 2025" outside the current year (month name in the app language). */
 export function formatDay(value: string | Date, today: Date = new Date()): string {
   const date = typeof value === 'string' ? new Date(value) : value;
-  return date.getFullYear() === today.getFullYear() ? dayMonth.format(date) : dayMonthYear.format(date);
+  return dayFormatter(date.getFullYear() !== today.getFullYear()).format(date);
 }
 
 export type RelativeDay = 'today' | 'yesterday' | 'tomorrow' | null;

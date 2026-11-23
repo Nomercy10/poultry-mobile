@@ -135,3 +135,15 @@ export function moreSections(user: User) {
     items: section.items.filter((item) => allowed(user, item.requires)),
   })).filter((section) => section.items.length > 0);
 }
+
+// ── App style ────────────────────────────────────────────────────────────────
+// Simple mode (big pictures, voice, one question per screen) for workers;
+// the detailed app for owners and managers. Users can switch either way.
+
+export function defaultUiMode(user: User): 'simple' | 'standard' {
+  if (!user) return 'standard';
+  if (isAdmin(user) || user.role === 'MANAGER') return 'standard';
+  // Anyone who can't see the overview or the money gets Simple.
+  const seesOverview = canAny(user, ['REVENUE', 'REPORT', 'USER']);
+  return seesOverview ? 'standard' : 'simple';
+}

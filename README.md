@@ -61,6 +61,17 @@ CI runs all three on every pull request (`.github/workflows/ci.yml`).
 - Quick add now opens each of these forms.
 - Plans: Free, Pro and Business limits and locked features, plus a read-only plans screen with no payment.
 
-**Next is M1, part 2:** Simple mode (picture tiles and voice prompts for workers), Hindi and Marathi, and 30-day trends. Sales and expenses come in M2.
+**M1, part 2 (Simple mode and languages) is done:**
+- **Languages:** English, Hindi and Marathi.
+  - A first-launch language picker: tap a language to hear it, before login.
+  - The language can be changed any time and applies instantly.
+  - Hindi and Marathi are drafts that need a native speaker's review.
+- **Simple mode:**
+  - It is the default for workers, for example `worker@poultryfarm.com`.
+  - Big picture tiles, one question per screen, voice prompts (text-to-speech for now), counting in trays and bags, a picture review, then save with a 10-second Undo.
+  - Flows: eggs, dead birds, feed used, vaccine given.
+- **Settings:** owners and workers can switch between Simple and Detailed (More → Account, or Me in Simple mode). The choice is saved per user on the phone.
+
+**Next:** 30-day trends, then M2 (sales, expenses, customers, suppliers). Recorded voice prompts, Telugu and Tamil are in the [languages spec](docs/languages-and-easy-ui.md).
 
 Moving the code and accounts to the company later is planned in [docs/moving-to-company-accounts.md](docs/moving-to-company-accounts.md).

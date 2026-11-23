@@ -16,7 +16,12 @@
     "tomorrow": "Tomorrow",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "back": "Back"
+    "back": "Back",
+    "continue": "Continue",
+    "undo": "Undo",
+    "home": "Home",
+    "next": "Next",
+    "listen": "Listen"
   },
   "auth": {
     "welcome": "Welcome back",
@@ -287,6 +292,90 @@
     "feed": "Feed",
     "outOfStock": "Out of stock: {{names}}",
     "lowStock": "Running low: {{names}}"
+  },
+  "language": {
+    "title": "Language",
+    "choose": "Choose your language",
+    "sample": "Press here for English"
+  },
+  "settings": {
+    "language": "Language",
+    "appStyle": "App style",
+    "simple": "Simple",
+    "simpleHint": "Big pictures, voice, one question at a time.",
+    "standard": "Detailed",
+    "standardHint": "All features, tabs and reports.",
+    "voice": "Voice prompts",
+    "voiceOn": "On",
+    "voiceOff": "Off"
+  },
+  "simple": {
+    "greeting": "Hello, {{name}}",
+    "tiles": {
+      "eggs": "Eggs",
+      "deaths": "Dead birds",
+      "feed": "Feed",
+      "vaccine": "Vaccine",
+      "me": "Me"
+    },
+    "doneToday": "Done today",
+    "notDone": "Not done yet",
+    "eggs": {
+      "goodQ": "How many good eggs today?",
+      "trays": "Trays",
+      "loose": "Loose eggs",
+      "total": "= {{total}} eggs",
+      "brokenQ": "Any broken or damaged eggs?",
+      "none": "None",
+      "review": "Good eggs: {{good}}. Broken: {{broken}}. Save?",
+      "savedSay": "Saved. {{good}} eggs.",
+      "alreadyToday": "Today's eggs are already saved. You can change them."
+    },
+    "deaths": {
+      "batchQ": "Which batch?",
+      "countQ": "How many birds died today?",
+      "causeQ": "Why? If you don't know, press next.",
+      "causes": {
+        "sick": "Sick",
+        "heat": "Heat",
+        "animal": "Animal attack",
+        "unknown": "Don't know"
+      },
+      "review": "Batch {{batch}}. {{count}} birds died. Save?",
+      "savedSay": "Saved. {{count}} birds.",
+      "tooMany": "This batch has only {{count}} birds."
+    },
+    "feed": {
+      "whichQ": "Which feed?",
+      "howMuchQ": "How much feed was used?",
+      "bags": "Bags",
+      "bagSize": "1 bag = {{size}} {{unit}}",
+      "total": "= {{amount}} {{unit}}",
+      "review": "{{feed}}. {{amount}} {{unit}}. Save?",
+      "savedSay": "Saved. {{amount}} {{unit}} of feed.",
+      "tooMuch": "Only {{left}} {{unit}} left.",
+      "lowAfter": "Feed is running low."
+    },
+    "vaccine": {
+      "whichQ": "Which vaccine was given?",
+      "none": "No vaccines due now.",
+      "due": "Due {{when}}",
+      "savedSay": "Saved. {{name}} given."
+    },
+    "save": "Save",
+    "saved": "Saved",
+    "undoIn": "Undo ({{seconds}})",
+    "undone": "Not saved. Nothing changed.",
+    "notSaved": "Not saved. Try again.",
+    "noSignal": "No signal. Try again when you have signal.",
+    "nothingHere": "Nothing to record here.",
+    "me": {
+      "title": "Me",
+      "detailed": "Open the detailed app",
+      "detailedHint": "For owners: all features and reports.",
+      "logout": "Log out"
+    },
+    "hint": "Tip: hold a picture to hear its name."
   },
   "plans": {
     "title": "Plans",

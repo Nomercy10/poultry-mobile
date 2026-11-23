@@ -18,7 +18,7 @@ import { space, touch } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 
 /** Feed used today, from GET /dashboard/feed-trend (needs DASHBOARD:READ). */
-function useFeedUsedToday(farmId: string | null) {
+export function useFeedUsedToday(farmId: string | null) {
   const user = useAuth((s) => s.user);
   return useQuery({
     queryKey: ['dashboard', 'feed-trend', farmId ?? 'all', 1],

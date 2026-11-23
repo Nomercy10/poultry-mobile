@@ -13,14 +13,17 @@ import { Section } from '@/components/ui/section';
 import { Text } from '@/components/ui/text';
 import { moreSections } from '@/features/navigation/menu';
 import { usePlan } from '@/features/plans/use-plan';
+import { useUiMode } from '@/features/settings/use-ui-mode';
+import { languageInfo } from '@/i18n/languages';
 import { confirm } from '@/lib/confirm';
 import { useAuth } from '@/store/auth';
 import { radius, space } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 
 export default function MoreScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
+  const mode = useUiMode();
   const user = useAuth((s) => s.user);
   const signOut = useAuth((s) => s.signOut);
   const [signingOut, setSigningOut] = useState(false);
@@ -87,6 +90,19 @@ export default function MoreScreen() {
       ))}
 
       <Section title={t('more.account')}>
+        <ListRow
+          title={t('settings.language')}
+          subtitle={languageInfo(i18n.language).endonym}
+          icon="translate"
+          onPress={() => router.push('/settings')}
+          testID="settings-language"
+        />
+        <ListRow
+          title={t('settings.appStyle')}
+          subtitle={mode === 'simple' ? t('settings.simple') : t('settings.standard')}
+          icon="view-grid-outline"
+          onPress={() => router.push('/settings')}
+        />
         <ListRow title={t('more.changePassword')} icon="lock-reset" badge={t('common.soon')} />
         <ListRow
           title={signingOut ? `${t('auth.logout')}…` : t('auth.logout')}

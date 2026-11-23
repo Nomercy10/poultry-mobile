@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 
 import { queryClient } from '@/lib/query-client';
 import { useAuth } from '@/store/auth';
+import { usePreferences } from '@/store/preferences';
 import { navigationTheme } from '@/theme/navigation-theme';
 import { useTheme } from '@/theme/use-theme';
 
@@ -17,17 +18,21 @@ export default function RootLayout() {
   const { scheme } = useTheme();
   const status = useAuth((s) => s.status);
   const bootstrap = useAuth((s) => s.bootstrap);
+  const prefsLoaded = usePreferences((s) => s.loaded);
+  const loadPrefs = usePreferences((s) => s.load);
 
   useEffect(() => {
+    void loadPrefs();
     void bootstrap();
-  }, [bootstrap]);
+  }, [bootstrap, loadPrefs]);
 
+  const ready = status !== 'booting' && prefsLoaded;
   useEffect(() => {
-    if (status !== 'booting') void SplashScreen.hideAsync();
-  }, [status]);
+    if (ready) void SplashScreen.hideAsync();
+  }, [ready]);
 
-  // Keep the splash screen up until we know whether there's a saved session.
-  if (status === 'booting') return null;
+  // Keep the splash screen up until we know the language and whether there's a saved session.
+  if (!ready) return null;
 
   const signedIn = status === 'signedIn';
 

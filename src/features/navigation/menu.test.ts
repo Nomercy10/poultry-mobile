@@ -1,7 +1,7 @@
 import { can } from '@/features/auth/permissions';
 import { enabledLoginMethods } from '@/features/auth/login-methods';
 
-import { moreSections, quickAddActions, visibleTabs } from './menu';
+import { defaultUiMode, moreSections, quickAddActions, visibleTabs } from './menu';
 
 // Mirrors the web repo's seed: WORKER gets CREATE/READ/UPDATE on these modules.
 const workerModules = ['DASHBOARD', 'EGG', 'CHICKEN', 'FEED', 'EXPENSE'];
@@ -71,5 +71,16 @@ describe('enabledLoginMethods', () => {
   it('offers only email login until phone OTP is switched on', () => {
     expect(enabledLoginMethods({ phoneOtpLogin: false })).toEqual(['password']);
     expect(enabledLoginMethods({ phoneOtpLogin: true })).toEqual(['phone-otp', 'password']);
+  });
+});
+
+describe('defaultUiMode', () => {
+  it('gives workers Simple mode and owners the detailed app', () => {
+    expect(defaultUiMode(worker)).toBe('simple');
+    expect(defaultUiMode(eggsOnly)).toBe('simple');
+    expect(defaultUiMode(admin)).toBe('standard');
+    expect(defaultUiMode({ role: 'MANAGER', permissions: [] })).toBe('standard');
+    expect(defaultUiMode({ role: 'Accountant', permissions: ['REVENUE:READ'] })).toBe('standard');
+    expect(defaultUiMode(null)).toBe('standard');
   });
 });
