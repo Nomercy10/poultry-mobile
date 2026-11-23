@@ -13,6 +13,7 @@ export default function AppLayout() {
           sheetCornerRadius: 16,
         }}
       />
+      <Stack.Screen name="plans" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }

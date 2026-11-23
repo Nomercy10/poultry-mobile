@@ -54,7 +54,7 @@ type QuickAddAction = { key: QuickAddKey; icon: IconName; requires: Requirement 
 
 const QUICK_ADD: QuickAddAction[] = [
   { key: 'eggEntry', icon: 'egg-outline', requires: { module: 'EGG', action: 'CREATE' } }, // POST /eggs
-  { key: 'mortality', icon: 'skull-outline', requires: { module: 'CHICKEN', action: 'UPDATE' } }, // POST /chickens/:id/events
+  { key: 'mortality', icon: 'heart-broken-outline', requires: { module: 'CHICKEN', action: 'UPDATE' } }, // POST /chickens/:id/events
   { key: 'feedUsed', icon: 'grain', requires: { module: 'FEED', action: 'UPDATE' } }, // POST /feed/:id/consumption
   { key: 'vaccination', icon: 'needle', requires: { module: 'CHICKEN', action: 'UPDATE' } }, // PUT /chickens/:id/vaccinations/:vid
   { key: 'medicine', icon: 'pill', requires: { module: 'CHICKEN', action: 'UPDATE' } },

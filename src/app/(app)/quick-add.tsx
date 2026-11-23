@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { type Href, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -7,10 +7,24 @@ import { Icon } from '@/components/ui/icon';
 import { ListRow } from '@/components/ui/list-row';
 import { Section } from '@/components/ui/section';
 import { Text } from '@/components/ui/text';
-import { quickAddActions } from '@/features/navigation/menu';
+import { type QuickAddKey, quickAddActions } from '@/features/navigation/menu';
 import { useAuth } from '@/store/auth';
 import { radius, space, touch } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
+
+/** Where each Quick add action goes; null = arrives in a later milestone. */
+const ROUTES: Record<QuickAddKey, Href | null> = {
+  eggEntry: '/eggs/new',
+  mortality: { pathname: '/pick', params: { for: 'mortality' } },
+  feedUsed: { pathname: '/pick', params: { for: 'feedUsed' } },
+  vaccination: { pathname: '/pick', params: { for: 'vaccination' } },
+  medicine: { pathname: '/pick', params: { for: 'medicine' } },
+  weight: { pathname: '/pick', params: { for: 'weight' } },
+  feedPurchase: '/feed/new',
+  newBatch: '/batches/new',
+  sale: null, // M2
+  expense: null, // M2
+};
 
 export default function QuickAddSheet() {
   const { t } = useTranslation();
@@ -40,9 +54,19 @@ export default function QuickAddSheet() {
         <EmptyState icon="lock-outline" title={t('quickAdd.nothing')} />
       ) : (
         <Section>
-          {actions.map((action) => (
-            <ListRow key={action.key} title={t(`quickAdd.${action.key}`)} icon={action.icon} badge={t('common.soon')} />
-          ))}
+          {actions.map((action) => {
+            const href = ROUTES[action.key];
+            return (
+              <ListRow
+                key={action.key}
+                title={t(`quickAdd.${action.key}`)}
+                icon={action.icon}
+                badge={href ? undefined : t('common.soon')}
+                onPress={href ? () => router.replace(href) : undefined}
+                testID={`quick-${action.key}`}
+              />
+            );
+          })}
         </Section>
       )}
     </ScrollView>

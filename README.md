@@ -19,7 +19,14 @@ npm run backend:demo
 
 This starts a throwaway Postgres on port 5433 (via the `embedded-postgres` npm package; nothing is installed system-wide), creates and seeds it on the first run, then runs the web backend on port 4000 against it. It never touches the web repo's `.env` or the real database: it refuses to migrate or seed unless Prisma confirms it's pointed at the local demo database. `npm run backend:demo:reset` wipes the demo data and re-seeds it.
 
-Log in with the seeded demo accounts listed in the web repo's README (admin and worker).
+Log in with the seeded demo accounts listed in the web repo's README (admin and worker), or with the two **plan demo accounts** the script creates:
+
+| Account | Plan | What it shows |
+| --- | --- | --- |
+| `free@demo.test` | Free | 1 farm, 2 active batches, 12 months of history, paid features locked |
+| `pro@demo.test` | Pro | No batch limit, batch performance unlocked |
+
+Their passwords are generated on first run and saved to `tools/demo-backend/.demo-logins.txt` (git-ignored). The admin and worker accounts behave as Business. Plans are applied by the app until the backend stores them (M5); see [docs/native-build-plan.md](docs/native-build-plan.md).
 
 **2. Start the app:**
 
@@ -46,4 +53,14 @@ CI runs all three on every pull request (`.github/workflows/ci.yml`).
 
 **M0 (Shell) is done:** design tokens (the web's amber brand, light and dark), UI components, an API client with token refresh, email login, forgot password, session restore and logout, and tabs and menus that follow each user's permissions. The Home screen shows the dashboard and has a farm switcher. Phone OTP login is built but switched off until the backend supports it.
 
-**Next is M1 (Daily operations):** egg entry, batches with events and vaccinations, feed, the Today checklist and trends.
+**M1, part 1 (Daily operations) is done:**
+- Home: a Today checklist (eggs, feed used, vaccinations due, low feed).
+- Eggs: daily entry with tray steppers and the stock ledger.
+- Batches: list, detail, deaths, weight, medicine, vaccines, notes, status changes and the vaccination schedule.
+- Feed: purchases, daily use and low-stock warnings; inventory summary.
+- Quick add now opens each of these forms.
+- Plans: Free, Pro and Business limits and locked features, plus a read-only plans screen with no payment.
+
+**Next is M1, part 2:** Simple mode (picture tiles and voice prompts for workers), Hindi and Marathi, and 30-day trends. Sales and expenses come in M2.
+
+Moving the code and accounts to the company later is planned in [docs/moving-to-company-accounts.md](docs/moving-to-company-accounts.md).

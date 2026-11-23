@@ -19,6 +19,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import EmbeddedPostgres from 'embedded-postgres';
 
+import { DEMO_ACCOUNTS, ensureDemoUsers, waitForBackend } from './demo-users.mjs';
+
 const here = path.dirname(fileURLToPath(import.meta.url));
 const mobileRepo = path.resolve(here, '../..');
 const webRepo = path.resolve(process.env.WEB_REPO ?? path.join(mobileRepo, '../claude'));
@@ -33,6 +35,7 @@ const EXPECTED_DATASOURCE = `"${DB_NAME}", schema "public" at "localhost:${PG_PO
 
 const dataDir = path.join(here, '.data');
 const seededMarker = path.join(here, '.seeded');
+const loginsFile = path.join(here, '.demo-logins.txt');
 
 function fail(message) {
   console.error(`\n✖ ${message}\n`);
@@ -46,6 +49,7 @@ if (!existsSync(path.join(backendDir, 'prisma', 'schema.prisma'))) {
 if (process.argv.includes('--reset')) {
   rmSync(dataDir, { recursive: true, force: true });
   rmSync(seededMarker, { force: true });
+  rmSync(loginsFile, { force: true });
   console.log('Demo database wiped.');
 }
 
@@ -114,3 +118,12 @@ if (!existsSync(seededMarker)) {
 console.log('Starting web backend on http://localhost:4000 (demo database)…\n');
 const backend = spawn('npm', ['run', 'dev'], { cwd: backendDir, env: childEnv, stdio: 'inherit' });
 backend.on('exit', (code) => shutdown(code ?? 0));
+
+// Free and Pro demo accounts for testing plans (created through the API).
+if (await waitForBackend('http://localhost:4000')) {
+  const notes = await ensureDemoUsers({ apiUrl: 'http://localhost:4000/api/v1', loginsFile });
+  console.log(`\n${['Plan demo accounts:', ...notes].join('\n  ')}`);
+  console.log(`  Logins for ${DEMO_ACCOUNTS.map((a) => a.email).join(' and ')} are in ${path.relative(mobileRepo, loginsFile)}\n`);
+} else {
+  console.log('\nBackend did not answer /health in time; plan demo accounts not checked.\n');
+}

@@ -18,7 +18,7 @@ export function ScreenHeader({ title, subtitle, right }: ScreenHeaderProps) {
         <Text variant="title" accessibilityRole="header" numberOfLines={1}>
           {title}
         </Text>
-        {subtitle && (
+        {!!subtitle && (
           <Text variant="caption" tone="muted" numberOfLines={1}>
             {subtitle}
           </Text>

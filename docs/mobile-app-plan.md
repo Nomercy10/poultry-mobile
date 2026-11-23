@@ -248,6 +248,8 @@ Steps:
 
 Each milestone ends with something running on your phone.
 
+> **Superseded (23 Nov 2026):** the revised roadmap in [native-build-plan.md](native-build-plan.md) moves languages and Simple mode into M1–M3, turns Stage 2 into M4 (Field-ready, including the organisation layer), and adds M5 (Plans and billing) and M6 (Launch). The table below is kept for history.
+
 | Milestone | Scope | Done when |
 | --- | --- | --- |
 | **M0 — Shell** | Clean out the template; tokens and themes; UI primitives; API client with refresh; login / logout / forgot password; `/me` and permission-aware tabs; farm switcher; CI (lint, types, tests) | You log in on your phone with the demo admin and the worker account, and each sees the right tabs |

@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -11,6 +12,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { Section } from '@/components/ui/section';
 import { Text } from '@/components/ui/text';
 import { moreSections } from '@/features/navigation/menu';
+import { usePlan } from '@/features/plans/use-plan';
 import { confirm } from '@/lib/confirm';
 import { useAuth } from '@/store/auth';
 import { radius, space } from '@/theme/tokens';
@@ -23,6 +25,7 @@ export default function MoreScreen() {
   const signOut = useAuth((s) => s.signOut);
   const [signingOut, setSigningOut] = useState(false);
 
+  const plan = usePlan();
   const sections = moreSections(user);
   const initials = (user?.name ?? '?')
     .split(' ')
@@ -59,10 +62,26 @@ export default function MoreScreen() {
         {user && <Badge label={user.role} tone="primary" />}
       </Card>
 
+      <Section>
+        <ListRow
+          title={t('plans.yourPlan')}
+          subtitle={t(`plans.${plan.id}`)}
+          icon="star-circle-outline"
+          onPress={() => router.push('/plans')}
+          testID="your-plan"
+        />
+      </Section>
+
       {sections.map((section) => (
         <Section key={section.key} title={t(`more.${section.key}`)}>
           {section.items.map((item) => (
-            <ListRow key={item.key} title={t(`more.${item.key}`)} icon={item.icon} badge={t('common.soon')} />
+            <ListRow
+              key={item.key}
+              title={t(`more.${item.key}`)}
+              icon={item.icon}
+              badge={item.key === 'inventory' ? undefined : t('common.soon')}
+              onPress={item.key === 'inventory' ? () => router.push('/inventory') : undefined}
+            />
           ))}
         </Section>
       ))}

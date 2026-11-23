@@ -45,6 +45,7 @@ example
 # demo backend tool (local Postgres data)
 tools/demo-backend/.data/
 tools/demo-backend/.seeded
+tools/demo-backend/.demo-logins.txt
 
 # local env
 .env

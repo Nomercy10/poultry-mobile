@@ -5,25 +5,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { router } from 'expo-router';
+
 import { useSelectedFarm } from '@/store/farm';
 import { radius, space, touch } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 
-import { useFarms } from './api';
+import { useWorkingFarm } from './use-working-farm';
 
 /** Header chip that picks the farm every screen filters by (like the web's farm filter). */
 export function FarmSwitcher() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { data: farms = [] } = useFarms();
+  const { farms, lockedFarms, filterFarmId } = useWorkingFarm();
   const farmId = useSelectedFarm((s) => s.farmId);
   const setFarmId = useSelectedFarm((s) => s.setFarmId);
   const [open, setOpen] = useState(false);
 
-  const selected = farms.find((f) => f.id === farmId);
-  const single = farms.length === 1;
-  const label = selected?.name ?? (single ? farms[0].name : t('common.allFarms'));
+  const selected = farms.find((f) => f.id === (farmId ?? filterFarmId));
+  const single = farms.length === 1 && lockedFarms.length === 0;
+  const label = selected?.name ?? (farms.length === 1 ? farms[0].name : t('common.allFarms'));
 
   if (farms.length === 0) return null;
 
@@ -33,9 +35,11 @@ export function FarmSwitcher() {
   };
 
   const options: { id: string | null; name: string; location?: string | null }[] = [
-    { id: null, name: t('common.allFarms') },
+    // "All farms" only when the plan covers every farm.
+    ...(lockedFarms.length === 0 ? [{ id: null, name: t('common.allFarms') }] : []),
     ...farms.map((f) => ({ id: f.id, name: f.name, location: f.location })),
   ];
+  const activeId = farmId ?? filterFarmId;
 
   return (
     <>
@@ -61,7 +65,7 @@ export function FarmSwitcher() {
               {t('farm.choose')}
             </Text>
             {options.map((opt) => {
-              const active = opt.id === farmId;
+              const active = opt.id === activeId;
               return (
                 <Pressable
                   key={opt.id ?? 'all'}
@@ -81,6 +85,27 @@ export function FarmSwitcher() {
                 </Pressable>
               );
             })}
+            {lockedFarms.map((f) => (
+              <Pressable
+                key={f.id}
+                onPress={() => {
+                  setOpen(false);
+                  router.push('/plans');
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`${f.name}. ${t('plans.lockedFarm')}`}
+                style={styles.option}>
+                <View style={styles.optionText}>
+                  <Text variant="body" tone="muted">
+                    {f.name}
+                  </Text>
+                  <Text variant="caption" tone="muted">
+                    {t('plans.lockedFarm')}
+                  </Text>
+                </View>
+                <Icon name="lock-outline" color={colors.textMuted} />
+              </Pressable>
+            ))}
           </Pressable>
         </Pressable>
       </Modal>
