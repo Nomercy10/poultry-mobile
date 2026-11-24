@@ -54,7 +54,7 @@ type QuickAddAction = { key: QuickAddKey; icon: IconName; requires: Requirement 
 
 const QUICK_ADD: QuickAddAction[] = [
   { key: 'eggEntry', icon: 'egg-outline', requires: { module: 'EGG', action: 'CREATE' } }, // POST /eggs
-  { key: 'mortality', icon: 'skull-outline', requires: { module: 'CHICKEN', action: 'UPDATE' } }, // POST /chickens/:id/events
+  { key: 'mortality', icon: 'heart-broken-outline', requires: { module: 'CHICKEN', action: 'UPDATE' } }, // POST /chickens/:id/events
   { key: 'feedUsed', icon: 'grain', requires: { module: 'FEED', action: 'UPDATE' } }, // POST /feed/:id/consumption
   { key: 'vaccination', icon: 'needle', requires: { module: 'CHICKEN', action: 'UPDATE' } }, // PUT /chickens/:id/vaccinations/:vid
   { key: 'medicine', icon: 'pill', requires: { module: 'CHICKEN', action: 'UPDATE' } },
@@ -134,4 +134,16 @@ export function moreSections(user: User) {
     key: section.key,
     items: section.items.filter((item) => allowed(user, item.requires)),
   })).filter((section) => section.items.length > 0);
+}
+
+// ── App style ────────────────────────────────────────────────────────────────
+// Simple mode (big pictures, voice, one question per screen) for workers;
+// the detailed app for owners and managers. Users can switch either way.
+
+export function defaultUiMode(user: User): 'simple' | 'standard' {
+  if (!user) return 'standard';
+  if (isAdmin(user) || user.role === 'MANAGER') return 'standard';
+  // Anyone who can't see the overview or the money gets Simple.
+  const seesOverview = canAny(user, ['REVENUE', 'REPORT', 'USER']);
+  return seesOverview ? 'standard' : 'simple';
 }

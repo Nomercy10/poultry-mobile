@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View, type ColorValue } from 'react-native';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/ui/icon';
 import { visibleTabs } from '@/features/navigation/menu';
+import { useUiMode } from '@/features/settings/use-ui-mode';
 import { useAuth } from '@/store/auth';
 import { radius } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
@@ -44,6 +45,9 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const user = useAuth((s) => s.user);
   const tabs = visibleTabs(user);
+  const mode = useUiMode();
+
+  if (mode === 'simple') return <Redirect href="/simple" />;
 
   return (
     <Tabs

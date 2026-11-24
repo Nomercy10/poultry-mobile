@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { radius, space, touch } from '@/theme/tokens';
@@ -14,11 +15,14 @@ type ListRowProps = {
   onPress?: () => void;
   /** Small pill on the right, e.g. "Soon" or a status. */
   badge?: string;
+  badgeTone?: ComponentProps<typeof Badge>['tone'];
+  /** Right-aligned value, e.g. a count. */
+  value?: string;
   destructive?: boolean;
   testID?: string;
 };
 
-export function ListRow({ title, subtitle, icon, onPress, badge, destructive, testID }: ListRowProps) {
+export function ListRow({ title, subtitle, icon, onPress, badge, badgeTone, value, destructive, testID }: ListRowProps) {
   const { colors } = useTheme();
   const fg = destructive ? colors.danger : colors.text;
 
@@ -36,17 +40,22 @@ export function ListRow({ title, subtitle, icon, onPress, badge, destructive, te
         </View>
       )}
       <View style={styles.text}>
-        <Text variant="body" style={{ color: fg, fontWeight: '500' }}>
+        <Text variant="body" numberOfLines={2} style={{ color: fg, fontWeight: '500' }}>
           {title}
         </Text>
-        {subtitle && (
+        {!!subtitle && (
           <Text variant="caption" tone="muted" numberOfLines={1}>
             {subtitle}
           </Text>
         )}
       </View>
-      {badge && <Badge label={badge} />}
-      {onPress && !badge && <Icon name="chevron-right" color={colors.textMuted} />}
+      {!!value && (
+        <Text variant="heading" numeric numberOfLines={1}>
+          {value}
+        </Text>
+      )}
+      {!!badge && <Badge label={badge} tone={badgeTone} />}
+      {onPress && <Icon name="chevron-right" color={colors.textMuted} />}
     </Pressable>
   );
 }

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { LanguageButton } from '@/components/language-button';
 import { Banner } from '@/components/ui/banner';
 import { Card } from '@/components/ui/card';
 import { KpiCard } from '@/components/ui/kpi-card';
@@ -10,16 +11,17 @@ import { Text } from '@/components/ui/text';
 import { can } from '@/features/auth/permissions';
 import { useDashboardSummary } from '@/features/dashboard/api';
 import { FarmSwitcher } from '@/features/farms/farm-switcher';
+import { useWorkingFarm } from '@/features/farms/use-working-farm';
+import { TodayChecklist } from '@/features/today/today-checklist';
 import { errorMessage } from '@/lib/api/messages';
 import { formatCurrency, formatNumber } from '@/lib/format';
 import { useAuth } from '@/store/auth';
-import { useSelectedFarm } from '@/store/farm';
 import { space } from '@/theme/tokens';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const user = useAuth((s) => s.user);
-  const farmId = useSelectedFarm((s) => s.farmId);
+  const { filterFarmId: farmId } = useWorkingFarm();
   const showDashboard = can(user, 'DASHBOARD');
   // The summary endpoint returns money figures to anyone with DASHBOARD:READ;
   // on the phone each card also needs the matching module (workers see no sales or profit).
@@ -36,7 +38,12 @@ export default function HomeScreen() {
     <Screen
       refreshing={summary.isRefetching}
       onRefresh={showDashboard ? () => void summary.refetch() : undefined}>
-      <ScreenHeader title={t('home.greeting', { name: firstName })} right={<FarmSwitcher />} />
+      <ScreenHeader title={t('home.greeting', { name: firstName })} right={<LanguageButton />} />
+      <View style={styles.farmRow}>
+        <FarmSwitcher />
+      </View>
+
+      <TodayChecklist />
 
       {!showDashboard && (
         <Card>
@@ -83,16 +90,12 @@ export default function HomeScreen() {
           )}
         </View>
       )}
-
-      <Text variant="caption" tone="muted" style={styles.note}>
-        {t('home.comingNext')}
-      </Text>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   grid: { gap: space.md },
+  farmRow: { flexDirection: 'row' },
   row: { flexDirection: 'row', gap: space.md },
-  note: { textAlign: 'center' },
 });

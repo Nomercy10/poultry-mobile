@@ -15,9 +15,12 @@
 
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, rmSync, writeFileSync } from 'node:fs';
+import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import EmbeddedPostgres from 'embedded-postgres';
+
+import { DEMO_ACCOUNTS, ensureDemoUsers, waitForBackend } from './demo-users.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const mobileRepo = path.resolve(here, '../..');
@@ -33,6 +36,9 @@ const EXPECTED_DATASOURCE = `"${DB_NAME}", schema "public" at "localhost:${PG_PO
 
 const dataDir = path.join(here, '.data');
 const seededMarker = path.join(here, '.seeded');
+const loginsFile = path.join(here, '.demo-logins.txt');
+// Lets the app's dev-only "demo accounts" buttons sign in with one tap (git-ignored).
+const envFile = path.join(mobileRepo, '.env.local');
 
 function fail(message) {
   console.error(`\n✖ ${message}\n`);
@@ -43,18 +49,37 @@ if (!existsSync(path.join(backendDir, 'prisma', 'schema.prisma'))) {
   fail(`Web backend not found at ${backendDir}. Set WEB_REPO to the poultry-farm-management checkout.`);
 }
 
+// Already running (another terminal, or a Claude session)? Say so instead of
+// crashing on the busy Postgres port.
+if (!process.argv.includes('--reset') && (await waitForBackend('http://localhost:4000', 1500))) {
+  const notes = await ensureDemoUsers({ apiUrl: 'http://localhost:4000/api/v1', loginsFile, envFile });
+  console.log('\n✔ The demo backend is already running on http://localhost:4000. Nothing to start.');
+  if (notes.length) console.log(`  ${notes.join('\n  ')}`);
+  console.log(`  Logins: ${path.relative(mobileRepo, loginsFile)}\n`);
+  process.exit(0);
+}
+
 if (process.argv.includes('--reset')) {
   rmSync(dataDir, { recursive: true, force: true });
   rmSync(seededMarker, { force: true });
+  rmSync(loginsFile, { force: true });
   console.log('Demo database wiped.');
 }
+
+// Browsers send an Origin header; allow the web app and the Expo web preview on
+// localhost and on this Mac's LAN addresses (phones and other laptops use those).
+const lanHosts = Object.values(networkInterfaces())
+  .flat()
+  .filter((a) => a && a.family === 'IPv4' && !a.internal)
+  .map((a) => a.address);
+const corsOrigins = ['localhost', '127.0.0.1', ...lanHosts].flatMap((h) => [`http://${h}:5173`, `http://${h}:8081`]);
 
 const childEnv = {
   ...process.env,
   NODE_ENV: 'development',
   DATABASE_URL,
   // 5173 = web app (Vite), 8081 = Expo web preview. Phones send no Origin header.
-  CORS_ORIGIN: 'http://localhost:5173,http://localhost:8081',
+  CORS_ORIGIN: corsOrigins.join(','),
 };
 
 function prisma(args) {
@@ -114,3 +139,12 @@ if (!existsSync(seededMarker)) {
 console.log('Starting web backend on http://localhost:4000 (demo database)…\n');
 const backend = spawn('npm', ['run', 'dev'], { cwd: backendDir, env: childEnv, stdio: 'inherit' });
 backend.on('exit', (code) => shutdown(code ?? 0));
+
+// Free and Pro demo accounts for testing plans (created through the API).
+if (await waitForBackend('http://localhost:4000')) {
+  const notes = await ensureDemoUsers({ apiUrl: 'http://localhost:4000/api/v1', loginsFile, envFile });
+  console.log(`\n${['Plan demo accounts:', ...notes].join('\n  ')}`);
+  console.log(`  Logins for ${DEMO_ACCOUNTS.map((a) => a.email).join(' and ')} are in ${path.relative(mobileRepo, loginsFile)}\n`);
+} else {
+  console.log('\nBackend did not answer /health in time; plan demo accounts not checked.\n');
+}
