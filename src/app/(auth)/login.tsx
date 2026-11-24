@@ -12,7 +12,11 @@ import { Text } from '@/components/ui/text';
 import { authApi } from '@/features/auth/api';
 import { PasswordLoginForm } from '@/features/auth/components/password-login-form';
 import { PhoneOtpForm } from '@/features/auth/components/phone-otp-form';
+import { demoLogins } from '@/features/auth/demo-logins';
 import { enabledLoginMethods } from '@/features/auth/login-methods';
+import { ListRow } from '@/components/ui/list-row';
+import { Section } from '@/components/ui/section';
+import { errorMessage } from '@/lib/api/messages';
 import type { LoginMethod } from '@/features/auth/types';
 import { languageInfo } from '@/i18n/languages';
 import { API_URL } from '@/lib/config';
@@ -21,6 +25,7 @@ import { radius, space, touch } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 
 const methods = enabledLoginMethods();
+const demos = demoLogins();
 
 export default function LoginScreen() {
   const { t, i18n } = useTranslation();
@@ -29,6 +34,19 @@ export default function LoginScreen() {
   const bootError = useAuth((s) => s.bootError);
   const bootstrap = useAuth((s) => s.bootstrap);
   const [method, setMethod] = useState<LoginMethod>(methods[0]);
+  const [demoBusy, setDemoBusy] = useState<string | null>(null);
+  const [demoError, setDemoError] = useState<string | null>(null);
+
+  async function quickSignIn(email: string, password: string) {
+    setDemoBusy(email);
+    setDemoError(null);
+    try {
+      await signIn(await authApi.loginWithPassword(email, password));
+    } catch (error) {
+      setDemoError(errorMessage(error, t));
+      setDemoBusy(null);
+    }
+  }
 
   return (
     <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -82,6 +100,22 @@ export default function LoginScreen() {
             </Text>
           </Link>
         )}
+
+        {demos.length > 0 && (
+          <Section title={t('auth.demoAccounts')}>
+            {demos.map((d) => (
+              <ListRow
+                key={d.email}
+                icon="account-circle-outline"
+                title={d.label}
+                subtitle={demoBusy === d.email ? t('auth.signingIn') : d.email}
+                onPress={demoBusy ? undefined : () => void quickSignIn(d.email, d.password)}
+                testID={`demo-${d.email}`}
+              />
+            ))}
+          </Section>
+        )}
+        {demoError && <Banner message={demoError} />}
 
         {__DEV__ && (
           <Text variant="caption" tone="muted" style={styles.server} selectable>

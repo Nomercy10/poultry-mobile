@@ -73,6 +73,13 @@ export default function MoreScreen() {
           onPress={() => router.push('/plans')}
           testID="your-plan"
         />
+        <ListRow
+          title={t('settings.language')}
+          subtitle={languageInfo(i18n.language).endonym}
+          icon="translate"
+          onPress={() => router.push('/settings')}
+          testID="settings-language"
+        />
       </Section>
 
       {sections.map((section) => (
@@ -90,13 +97,6 @@ export default function MoreScreen() {
       ))}
 
       <Section title={t('more.account')}>
-        <ListRow
-          title={t('settings.language')}
-          subtitle={languageInfo(i18n.language).endonym}
-          icon="translate"
-          onPress={() => router.push('/settings')}
-          testID="settings-language"
-        />
         <ListRow
           title={t('settings.appStyle')}
           subtitle={mode === 'simple' ? t('settings.simple') : t('settings.standard')}

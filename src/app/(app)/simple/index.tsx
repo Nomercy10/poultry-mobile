@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { LanguageButton } from '@/components/language-button';
 import { BigTile } from '@/components/simple/big-tile';
 import { Banner } from '@/components/ui/banner';
 import { Screen } from '@/components/ui/screen';
@@ -34,9 +35,12 @@ export default function SimpleHome() {
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <Text variant="title" accessibilityRole="header">
-        {t('simple.greeting', { name: firstName })}
-      </Text>
+      <View style={styles.header}>
+        <Text variant="title" accessibilityRole="header" style={styles.flex}>
+          {t('simple.greeting', { name: firstName })}
+        </Text>
+        <LanguageButton />
+      </View>
 
       {failed && (
         <Banner
@@ -99,4 +103,6 @@ export default function SimpleHome() {
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
   hint: { textAlign: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  flex: { flex: 1 },
 });

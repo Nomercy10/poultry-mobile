@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { LanguageButton } from '@/components/language-button';
 import { Banner } from '@/components/ui/banner';
 import { Card } from '@/components/ui/card';
 import { KpiCard } from '@/components/ui/kpi-card';
@@ -37,7 +38,10 @@ export default function HomeScreen() {
     <Screen
       refreshing={summary.isRefetching}
       onRefresh={showDashboard ? () => void summary.refetch() : undefined}>
-      <ScreenHeader title={t('home.greeting', { name: firstName })} right={<FarmSwitcher />} />
+      <ScreenHeader title={t('home.greeting', { name: firstName })} right={<LanguageButton />} />
+      <View style={styles.farmRow}>
+        <FarmSwitcher />
+      </View>
 
       <TodayChecklist />
 
@@ -92,5 +96,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   grid: { gap: space.md },
+  farmRow: { flexDirection: 'row' },
   row: { flexDirection: 'row', gap: space.md },
 });

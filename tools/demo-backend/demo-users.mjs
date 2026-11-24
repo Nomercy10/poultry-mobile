@@ -60,6 +60,25 @@ async function call(apiUrl, path, { method = 'GET', token, body } = {}) {
   return { status: res.status, json };
 }
 
+// Seeded by the web repo; same local-only accounts the web README lists.
+const SEEDED = [
+  { email: 'admin@poultryfarm.com', password: ADMIN_PASSWORD, label: 'Admin (Business)' },
+  { email: 'worker@poultryfarm.com', password: process.env.DEMO_WORKER_PASSWORD ?? 'Worker@123', label: 'Worker (Simple mode)' },
+];
+
+/** Writes EXPO_PUBLIC_DEMO_LOGINS into .env.local, keeping any other lines. Dev builds only show it. */
+function writeAppEnv(envFile, logins) {
+  if (!envFile) return;
+  const accounts = [
+    ...DEMO_ACCOUNTS.filter((a) => logins[a.email]).map((a) => ({ email: a.email, password: logins[a.email], label: `${a.plan} plan` })),
+    ...SEEDED,
+  ];
+  const line = `EXPO_PUBLIC_DEMO_LOGINS=${Buffer.from(JSON.stringify(accounts)).toString('base64')}`;
+  const existing = existsSync(envFile) ? readFileSync(envFile, 'utf8').split('\n') : [];
+  const kept = existing.filter((l) => l.trim() && !l.startsWith('EXPO_PUBLIC_DEMO_LOGINS='));
+  writeFileSync(envFile, [...kept, '# Local demo logins for the dev-only quick sign-in (written by backend:demo)', line, ''].join('\n'), { mode: 0o600 });
+}
+
 export async function waitForBackend(baseUrl, timeoutMs = 90_000) {
   const until = Date.now() + timeoutMs;
   while (Date.now() < until) {
@@ -75,7 +94,7 @@ export async function waitForBackend(baseUrl, timeoutMs = 90_000) {
 }
 
 /** Idempotent: creates missing accounts, keeps existing ones. Returns lines to print. */
-export async function ensureDemoUsers({ apiUrl, loginsFile }) {
+export async function ensureDemoUsers({ apiUrl, loginsFile, envFile }) {
   const logins = readLogins(loginsFile);
   const login = await call(apiUrl, '/auth/login', {
     method: 'POST',
@@ -108,5 +127,6 @@ export async function ensureDemoUsers({ apiUrl, loginsFile }) {
     }
   }
   writeLogins(loginsFile, logins);
+  writeAppEnv(envFile, logins);
   return notes;
 }

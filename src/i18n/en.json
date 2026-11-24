@@ -52,7 +52,9 @@
     "linkSent": "If an account exists for that email, a reset link is on its way. Open it on this phone or a computer.",
     "backToLogin": "Back to login",
     "logout": "Log out",
-    "logoutConfirm": "Log out of this phone?"
+    "logoutConfirm": "Log out of this phone?",
+    "demoAccounts": "Demo accounts (this laptop only)",
+    "signingIn": "Signing in…"
   },
   "tabs": {
     "home": "Home",
