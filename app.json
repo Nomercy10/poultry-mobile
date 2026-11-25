@@ -8,9 +8,11 @@
     "scheme": "poultry",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.poultrymobile.test"
     },
     "android": {
+      "package": "com.poultrymobile.test",
       "adaptiveIcon": {
         "backgroundColor": "#FCFAF8",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -43,6 +45,18 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "53d3568a-c866-4866-b61c-bd148d8d09d9"
+      }
+    },
+    "owner": "rushikesh10",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/53d3568a-c866-4866-b61c-bd148d8d09d9"
     }
   }
 }

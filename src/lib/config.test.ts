@@ -12,6 +12,13 @@ describe('deriveApiUrl', () => {
     expect(deriveApiUrl({ hostUri: '10.0.0.7:8081', platform: 'ios' })).toBe('http://10.0.0.7:4000/api/v1');
   });
 
+  it("points a development build at the Mac's .local name", () => {
+    expect(deriveApiUrl({ hostUri: 'Rushikeshs-MacBook-Air.local:8081', platform: 'ios' })).toBe(
+      'http://Rushikeshs-MacBook-Air.local:4000/api/v1',
+    );
+    expect(deriveApiUrl({ hostUri: 'evil.example.com:8081', platform: 'ios' })).toBe('http://localhost:4000/api/v1');
+  });
+
   it('uses localhost on web', () => {
     expect(deriveApiUrl({ hostUri: '192.168.1.20:8081', platform: 'web' })).toBe('http://localhost:4000/api/v1');
   });
