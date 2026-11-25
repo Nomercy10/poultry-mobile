@@ -20,7 +20,9 @@ export type FeatureKey =
   | 'cashForecast' // cash for the next 30, 60, 90 days
   | 'feedPlanner' // when to reorder feed, how much, what it costs
   | 'latePayers' // flags customers who keep paying late
-  | 'taxPack'; // yearly summary and export for the CA
+  | 'taxPack' // yearly summary and export for the CA
+  | 'renewalsUnlimited' // Free keeps 3 open renewals
+  | 'creditLimits'; // per-customer credit limit and warnings
 
 export type PlanLimits = {
   farms: number;
@@ -55,6 +57,8 @@ const PRO_FEATURES: FeatureKey[] = [
   'feedPlanner',
   'latePayers',
   'taxPack',
+  'renewalsUnlimited',
+  'creditLimits',
 ];
 
 const BUSINESS_FEATURES: FeatureKey[] = [...PRO_FEATURES, 'gstInvoices', 'multiFarmDashboard', 'payroll'];

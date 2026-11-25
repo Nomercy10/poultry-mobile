@@ -17,8 +17,9 @@ import { Text } from '@/components/ui/text';
 import { can } from '@/features/auth/permissions';
 import { FarmSwitcher } from '@/features/farms/farm-switcher';
 import { useWorkingFarm } from '@/features/farms/use-working-farm';
-import { type Range, useDues, useExpenses, useSales } from '@/features/money/api';
+import { type Range, useDues, useExpenses, useRenewals, useSales } from '@/features/money/api';
 import { EXPENSE_ICONS, SALE_ICONS } from '@/features/money/icons';
+import { groupRenewals } from '@/features/money/renewals';
 import {
   amountDue,
   duesByCustomer,
@@ -110,6 +111,7 @@ export default function MoneyScreen() {
         {can(user, 'FEED') && (
           <ListRow icon="calendar-clock" title={t('insights.feed.title')} subtitle={t('insights.feed.linkHint')} onPress={() => router.push('/feed/plan')} />
         )}
+        {can(user, 'RENEWAL') && <RenewalsRow />}
         {canSales && canExpenses && (
           <ListRow
             icon="file-document-outline"
@@ -126,6 +128,26 @@ export default function MoneyScreen() {
         </Text>
       )}
     </Screen>
+  );
+}
+
+/** Renewals entry, with how many are due soon or overdue. */
+function RenewalsRow() {
+  const { t } = useTranslation();
+  const { filterFarmId } = useWorkingFarm();
+  const renewals = useRenewals(filterFarmId);
+  const groups = groupRenewals(renewals.data ?? []);
+  const urgent = groups.overdue.length + groups.dueSoon.length;
+  return (
+    <ListRow
+      icon="calendar-alert"
+      title={t('insights.renewals.title')}
+      subtitle={t('insights.renewals.linkHint')}
+      badge={urgent > 0 ? t('insights.renewals.dueCount', { count: urgent }) : undefined}
+      badgeTone={groups.overdue.length > 0 ? 'danger' : 'warning'}
+      onPress={() => router.push('/money/renewals')}
+      testID="open-renewals"
+    />
   );
 }
 

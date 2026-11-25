@@ -1,6 +1,7 @@
 import type { IconName } from '@/components/ui/icon';
 
 import type { ExpenseCategory, PaymentMode, SaleType } from './model';
+import type { RenewalKind } from './renewals';
 
 export const SALE_ICONS: Record<SaleType, IconName> = {
   EGG_SALE: 'egg-outline',
@@ -31,4 +32,13 @@ export const PAYMENT_MODE_ICONS: Record<PaymentMode, IconName> = {
   CREDIT: 'clock-outline',
   CHEQUE: 'checkbook',
   CARD: 'credit-card-outline',
+};
+
+export const RENEWAL_ICONS: Record<RenewalKind, IconName> = {
+  LICENCE: 'file-certificate-outline',
+  POLLUTION_CONSENT: 'smoke',
+  INSURANCE: 'shield-check-outline',
+  LOAN_EMI: 'bank-outline',
+  VEHICLE: 'car-outline',
+  OTHER: 'calendar-star',
 };

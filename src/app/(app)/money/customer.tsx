@@ -79,6 +79,13 @@ export default function CustomerDuesScreen() {
             </Text>
           </Card>
           {customerId && hasFeature(plan, 'latePayers') && isLatePayer(group) && <Banner tone="warning" message={t('insights.latePayerHint')} />}
+          {hasFeature(plan, 'creditLimits') && !!customer?.creditLimit && (
+            <Text variant="caption" tone={group.due > customer.creditLimit ? 'danger' : 'muted'} style={styles.center}>
+              {group.due > customer.creditLimit
+                ? t('insights.credit.over', { limit: formatCurrency(customer.creditLimit), over: formatCurrency(group.due - customer.creditLimit) })
+                : t('insights.credit.left', { limit: formatCurrency(customer.creditLimit), left: formatCurrency(customer.creditLimit - group.due) })}
+            </Text>
+          )}
           <Button label={t('money.sendReminder')} icon="whatsapp" onPress={() => void sendReminder(customer?.phone, message).catch(() => {})} testID="send-reminder" />
           {!hasFeature(plan, 'paymentReminders') && <LockedFeature feature="paymentReminders" />}
           <Section title={t('money.unpaidSales')}>
@@ -101,4 +108,4 @@ export default function CustomerDuesScreen() {
   );
 }
 
-const styles = StyleSheet.create({ total: { alignItems: 'center', gap: space.xs } });
+const styles = StyleSheet.create({ total: { alignItems: 'center', gap: space.xs }, center: { textAlign: 'center' } });

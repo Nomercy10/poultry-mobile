@@ -81,6 +81,16 @@ CI runs all three on every pull request (`.github/workflows/ci.yml`).
 - **Simple mode:** a Sale tile (what, how many, price for one, paid or later, then save with Undo). It shows only for people allowed to record sales.
 - The backend has no columns yet for the amount paid on part-paid sales or for the unit. The app keeps both as plain first lines in the sale's notes (`Paid so far: ₹500`, `Unit: TRAY`) until the backend change in M4.
 
-**Next (M2, part 2):** the smart finance features the CEO picked on 2026-11-25: cash forecast for 30, 60 and 90 days; feed runway and reorder planner; late payers and credit limits on top of dues by age; renewals calendar; tax pack for the CA. Then 30-day trends. Recorded voice prompts, Telugu and Tamil are in the [languages spec](docs/languages-and-easy-ui.md).
+**M2, part 2 (smart finance) is built** (Money → Plan ahead):
+- **Cash forecast** (Pro): cash for the next 30, 60 and 90 days, from the last 60 days of money in and out plus dues up to 60 days old. Warns when cash may go below zero.
+- **Feed plan**: days of feed left for each feed (Free). Pro adds when to order, how much and the likely cost.
+- **Late payers** (Pro): customers with two sales unpaid for over 30 days, or one for over 60, are flagged.
+- **Credit limits** (Pro): an optional limit per customer, shown on the customer screen, with a warning on a sale that goes over it.
+- **Renewals** (Free up to 3, Pro unlimited): licences, pollution-board consent, insurance, loan EMIs and vehicle papers, with reminders shown in the app.
+- **Tax pack** (Pro): a financial year's totals and a CSV for the CA.
+
+Renewals and credit limits need the web repo's `renewals-credit-limits` backend change. Until it is deployed, the Renewals screen says a server update is needed and credit limits aren't saved. Reminders show inside the app only; phone notifications come with push in M4.
+
+**Next:** 30-day trends.
 
 Moving the code and accounts to the company later is planned in [docs/moving-to-company-accounts.md](docs/moving-to-company-accounts.md).

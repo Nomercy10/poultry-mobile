@@ -438,7 +438,9 @@
     "feature_cashForecast": "Cash forecast for 30, 60 and 90 days",
     "feature_feedPlanner": "Feed reorder planner",
     "feature_latePayers": "Spot customers who pay late",
-    "feature_taxPack": "Tax pack for your CA"
+    "feature_taxPack": "Tax pack for your CA",
+    "feature_renewalsUnlimited": "Unlimited renewal reminders",
+    "feature_creditLimits": "Credit limits for customers"
   },
   "money": {
     "title": "Money",
@@ -637,6 +639,68 @@
       "shareTitle": "Tax pack",
       "shareFailed": "Could not make the file. Please try again.",
       "disclaimer": "These are totals of your records, not tax advice. Please check with your CA."
+    },
+    "renewals": {
+      "title": "Renewals",
+      "intro": "Licences, insurance, loan EMIs and other dates you must not miss. You get a reminder before each one.",
+      "linkHint": "Licences, insurance and EMIs",
+      "serverUpdate": "Renewals need the latest server update. They will work here once it is live.",
+      "add": "Add a renewal",
+      "edit": "Edit renewal",
+      "freeLimit_one": "The Free plan keeps up to {{count}} renewal.",
+      "freeLimit_other": "The Free plan keeps up to {{count}} renewals.",
+      "empty": "Nothing to renew yet",
+      "emptyHint": "Add your farm licence, pollution-board consent, insurance or loan EMI to get a reminder before it is due.",
+      "group": {
+        "overdue": "Overdue",
+        "dueSoon": "Due soon",
+        "later": "Later"
+      },
+      "overdueBy_one": "{{count}} day late",
+      "overdueBy_other": "{{count}} days late",
+      "dueToday": "Due today",
+      "dueIn_one": "In {{count}} day",
+      "dueIn_other": "In {{count}} days",
+      "dueCount_one": "{{count}} due",
+      "dueCount_other": "{{count}} due",
+      "repeat": {
+        "once": "Once",
+        "1": "Every month",
+        "3": "Every 3 months",
+        "6": "Every 6 months",
+        "12": "Every year"
+      },
+      "kind": "What is it?",
+      "kinds": {
+        "LICENCE": "Licence",
+        "POLLUTION_CONSENT": "Pollution board",
+        "INSURANCE": "Insurance",
+        "LOAN_EMI": "Loan EMI",
+        "VEHICLE": "Vehicle papers",
+        "OTHER": "Other"
+      },
+      "titleLabel": "Name",
+      "titlePlaceholder": "e.g. Panchayat trade licence",
+      "titleRequired": "Enter a name of at least 2 letters.",
+      "dueDate": "Due date",
+      "inMonths_one": "In {{count}} month",
+      "inMonths_other": "In {{count}} months",
+      "repeatLabel": "Repeats",
+      "amount": "Amount to pay (optional)",
+      "remindLabel": "Remind me",
+      "remindDays_one": "{{count}} day before",
+      "remindDays_other": "{{count}} days before",
+      "doneRepeat": "Paid / renewed",
+      "doneOnce": "Mark as done",
+      "doneRepeatHint": "The next due date will be {{date}}.",
+      "deleteConfirm": "Delete this renewal? This can't be undone."
+    },
+    "credit": {
+      "limitLabel": "Credit limit (optional)",
+      "limitHint": "The most this customer may owe at once. Leave at 0 for no limit.",
+      "over": "Over the credit limit of {{limit}} by {{over}}.",
+      "left": "Credit limit {{limit}} · {{left}} left",
+      "saleOver": "This sale takes {{name}} {{over}} over their credit limit of {{limit}}. You can still save it."
     }
   }
 }

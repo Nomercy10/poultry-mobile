@@ -4,6 +4,7 @@ import {
   amountDue,
   applyPayment,
   isLatePayer,
+  overCreditLimit,
   beforeHistory,
   composeNotes,
   duesByCustomer,
@@ -130,5 +131,14 @@ describe('isLatePayer', () => {
   });
   it('does not flag one sale a little late, or recent dues', () => {
     expect(isLatePayer({ sales: [unpaid(35), unpaid(5)] as never }, today)).toBe(false);
+  });
+});
+
+describe('overCreditLimit', () => {
+  it('reports how far over the limit a new unpaid sale goes', () => {
+    expect(overCreditLimit(10000, 8000, 3000)).toBe(1000);
+    expect(overCreditLimit(10000, 8000, 2000)).toBe(0);
+    expect(overCreditLimit(null, 8000, 99999)).toBe(0);
+    expect(overCreditLimit(0, 8000, 99999)).toBe(0);
   });
 });

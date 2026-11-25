@@ -2,9 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { can } from '@/features/auth/permissions';
 import { api } from '@/lib/api/client';
+import { isApiError } from '@/lib/api/errors';
 import { useAuth } from '@/store/auth';
 
 import type { Expense, ExpenseCategory, Party, PaymentMode, PaymentStatus, Sale, SaleType } from './model';
+import type { Renewal, RenewalKind } from './renewals';
 
 export type Range = { dateFrom: string; dateTo: string };
 
@@ -32,7 +34,26 @@ export type ExpenseInput = {
 };
 
 export type PartyKind = 'customers' | 'suppliers';
-export type PartyInput = { name: string; phone?: string; address?: string; gstNumber?: string; suppliesType?: string };
+export type PartyInput = {
+  name: string;
+  phone?: string;
+  address?: string;
+  gstNumber?: string;
+  suppliesType?: string;
+  /** Customers only; null clears it. */
+  creditLimit?: number | null;
+};
+
+export type RenewalInput = {
+  farmId: string;
+  title: string;
+  kind: RenewalKind;
+  dueDate: string;
+  repeatMonths: number | null;
+  amount: number | null;
+  remindDaysBefore: number;
+  notes: string | null;
+};
 
 export const moneyKeys = {
   all: ['money'] as const,
@@ -43,6 +64,7 @@ export const moneyKeys = {
   expense: (id: string) => ['money', 'expense', id] as const,
   dues: (farmId: string | null) => ['money', 'dues', farmId ?? 'all'] as const,
   parties: (kind: PartyKind) => ['money', kind] as const,
+  renewals: (farmId: string | null) => ['money', 'renewals', farmId ?? 'all'] as const,
 };
 
 // The server returns Prisma Float/Decimal; normalise to numbers.
@@ -232,4 +254,41 @@ export function useSaveParty(kind: PartyKind, id?: string) {
     mutationFn: (input: PartyInput) => (id ? api.put<Party>(`/${kind}/${id}`, input) : api.post<Party>(`/${kind}`, input)),
     onSuccess: invalidate,
   });
+}
+
+const toRenewal = (r: Renewal): Renewal => ({ ...r, amount: r.amount === null ? null : Number(r.amount) });
+
+/** Open renewals, soonest first. A 404 means the server doesn't have renewals yet. */
+export function useRenewals(farmId: string | null) {
+  const user = useAuth((s) => s.user);
+  return useQuery({
+    queryKey: moneyKeys.renewals(farmId),
+    queryFn: ({ signal }) =>
+      api.get<Renewal[]>('/renewals', { query: { farmId: farmId ?? undefined }, signal }).then((list) => list.map(toRenewal)),
+    enabled: can(user, 'RENEWAL'),
+    retry: (count, error) => !(isApiError(error) && error.status === 404) && count < 2,
+  });
+}
+
+export function useSaveRenewal(id?: string) {
+  const invalidate = useInvalidateMoney();
+  return useMutation({
+    mutationFn: (input: RenewalInput) => {
+      if (!id) return api.post<Renewal>('/renewals', input);
+      const { farmId: _farmId, ...rest } = input;
+      return api.put<Renewal>(`/renewals/${id}`, rest);
+    },
+    onSuccess: invalidate,
+  });
+}
+
+/** Repeating: moves to the next due date. One-off: marks it done. */
+export function useRenewalDone() {
+  const invalidate = useInvalidateMoney();
+  return useMutation({ mutationFn: (id: string) => api.post<Renewal>(`/renewals/${id}/done`), onSuccess: invalidate });
+}
+
+export function useDeleteRenewal() {
+  const invalidate = useInvalidateMoney();
+  return useMutation({ mutationFn: (id: string) => api.delete(`/renewals/${id}`), onSuccess: invalidate });
 }

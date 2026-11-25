@@ -59,6 +59,8 @@ export type Party = {
   address: string | null;
   gstNumber: string | null;
   suppliesType?: string | null;
+  /** Customers only: most they may owe at once; null = no limit. Needs the renewals-credit-limits backend. */
+  creditLimit?: number | null;
 };
 
 export type Sale = {
@@ -218,6 +220,15 @@ export const LATE_AFTER_DAYS = 30;
 export function isLatePayer(group: Pick<CustomerDues, 'sales'>, today: Date = new Date()): boolean {
   const overdue = group.sales.filter((s) => amountDue(s) > 0 && daysAgo(s.date, today) > LATE_AFTER_DAYS);
   return overdue.length >= 2 || overdue.some((s) => ageBucket(s.date, today) === 'veryLate');
+}
+
+/**
+ * How far a customer would go over their credit limit if `adding` more were
+ * left unpaid; 0 when within it or when they have no limit.
+ */
+export function overCreditLimit(limit: number | null | undefined, owedNow: number, adding: number): number {
+  if (!limit || limit <= 0) return 0;
+  return round2(Math.max(0, owedNow + adding - limit));
 }
 
 export function totalByBucket(groups: CustomerDues[]): Record<AgeBucket, number> {

@@ -438,7 +438,9 @@
     "feature_cashForecast": "30, 60 और 90 दिनों का पैसों का अनुमान",
     "feature_feedPlanner": "दाना दोबारा मँगाने की योजना",
     "feature_latePayers": "देर से पैसे देने वाले ग्राहक पहचानें",
-    "feature_taxPack": "आपके CA के लिए टैक्स पैक"
+    "feature_taxPack": "आपके CA के लिए टैक्स पैक",
+    "feature_renewalsUnlimited": "असीमित नवीनीकरण रिमाइंडर",
+    "feature_creditLimits": "ग्राहकों के लिए उधार सीमा"
   },
   "money": {
     "title": "पैसा",
@@ -637,6 +639,68 @@
       "shareTitle": "टैक्स पैक",
       "shareFailed": "फ़ाइल नहीं बन सकी। फिर से कोशिश करें।",
       "disclaimer": "यह आपके रिकॉर्ड का जोड़ है, टैक्स सलाह नहीं। अपने CA से ज़रूर पूछें।"
+    },
+    "renewals": {
+      "title": "नवीनीकरण",
+      "intro": "लाइसेंस, बीमा, लोन की EMI और ऐसी तारीखें जो छूटनी नहीं चाहिए। हर एक से पहले याद दिलाया जाएगा।",
+      "linkHint": "लाइसेंस, बीमा और EMI",
+      "serverUpdate": "नवीनीकरण के लिए सर्वर का नया अपडेट चाहिए। अपडेट आते ही यह यहाँ काम करेगा।",
+      "add": "नवीनीकरण जोड़ें",
+      "edit": "नवीनीकरण बदलें",
+      "freeLimit_one": "फ़्री प्लान में {{count}} नवीनीकरण तक रख सकते हैं।",
+      "freeLimit_other": "फ़्री प्लान में {{count}} नवीनीकरण तक रख सकते हैं।",
+      "empty": "अभी कुछ नवीनीकरण के लिए नहीं",
+      "emptyHint": "फ़ार्म लाइसेंस, प्रदूषण बोर्ड की अनुमति, बीमा या लोन की EMI जोड़ें ताकि तारीख से पहले याद दिलाया जाए।",
+      "group": {
+        "overdue": "तारीख निकल गई",
+        "dueSoon": "जल्द आने वाले",
+        "later": "बाद में"
+      },
+      "overdueBy_one": "{{count}} दिन देर",
+      "overdueBy_other": "{{count}} दिन देर",
+      "dueToday": "आज है",
+      "dueIn_one": "{{count}} दिन में",
+      "dueIn_other": "{{count}} दिन में",
+      "dueCount_one": "{{count}} बाकी",
+      "dueCount_other": "{{count}} बाकी",
+      "repeat": {
+        "once": "एक बार",
+        "1": "हर महीने",
+        "3": "हर 3 महीने",
+        "6": "हर 6 महीने",
+        "12": "हर साल"
+      },
+      "kind": "यह क्या है?",
+      "kinds": {
+        "LICENCE": "लाइसेंस",
+        "POLLUTION_CONSENT": "प्रदूषण बोर्ड",
+        "INSURANCE": "बीमा",
+        "LOAN_EMI": "लोन EMI",
+        "VEHICLE": "गाड़ी के कागज़",
+        "OTHER": "अन्य"
+      },
+      "titleLabel": "नाम",
+      "titlePlaceholder": "जैसे पंचायत व्यापार लाइसेंस",
+      "titleRequired": "कम से कम 2 अक्षर का नाम लिखें।",
+      "dueDate": "आख़िरी तारीख",
+      "inMonths_one": "{{count}} महीने में",
+      "inMonths_other": "{{count}} महीने में",
+      "repeatLabel": "दोहराना",
+      "amount": "भरने की रकम (वैकल्पिक)",
+      "remindLabel": "याद दिलाएँ",
+      "remindDays_one": "{{count}} दिन पहले",
+      "remindDays_other": "{{count}} दिन पहले",
+      "doneRepeat": "भर दिया / नवीनीकरण हो गया",
+      "doneOnce": "हो गया",
+      "doneRepeatHint": "अगली तारीख {{date}} होगी।",
+      "deleteConfirm": "यह नवीनीकरण हटाएँ? यह वापस नहीं आएगा।"
+    },
+    "credit": {
+      "limitLabel": "उधार सीमा (वैकल्पिक)",
+      "limitHint": "यह ग्राहक एक समय में ज़्यादा से ज़्यादा कितना बकाया रख सकता है। कोई सीमा नहीं तो 0 रखें।",
+      "over": "{{limit}} की उधार सीमा से {{over}} ज़्यादा।",
+      "left": "उधार सीमा {{limit}} · {{left}} बाकी",
+      "saleOver": "इस बिक्री से {{name}} अपनी {{limit}} की उधार सीमा से {{over}} ऊपर चले जाएँगे। फिर भी सेव कर सकते हैं।"
     }
   }
 }

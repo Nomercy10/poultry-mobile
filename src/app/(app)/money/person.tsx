@@ -5,11 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { FormHeader } from '@/components/ui/form-header';
+import { NumberField } from '@/components/ui/number-field';
 import { Screen } from '@/components/ui/screen';
 import { TextField } from '@/components/ui/text-field';
 import { can } from '@/features/auth/permissions';
 import { type PartyKind, useParties, useSaveParty } from '@/features/money/api';
 import type { Party } from '@/features/money/model';
+import { hasFeature } from '@/features/plans/catalog';
+import { LockedFeature } from '@/features/plans/locked-feature';
+import { usePlan } from '@/features/plans/use-plan';
 import { errorMessage } from '@/lib/api/messages';
 import { leave } from '@/lib/navigation';
 import { useAuth } from '@/store/auth';
@@ -27,6 +31,8 @@ export default function PersonScreen() {
 function PersonForm({ kind, existing }: { kind: PartyKind; existing: Party | null }) {
   const { t } = useTranslation();
   const user = useAuth((s) => s.user);
+  const plan = usePlan();
+  const limits = hasFeature(plan, 'creditLimits');
   const save = useSaveParty(kind, existing?.id);
   const isCustomers = kind === 'customers';
   const [name, setName] = useState(existing?.name ?? '');
@@ -34,6 +40,7 @@ function PersonForm({ kind, existing }: { kind: PartyKind; existing: Party | nul
   const [address, setAddress] = useState(existing?.address ?? '');
   const [gst, setGst] = useState(existing?.gstNumber ?? '');
   const [supplies, setSupplies] = useState(existing?.suppliesType ?? '');
+  const [creditLimit, setCreditLimit] = useState<number | undefined>(existing?.creditLimit ?? undefined);
   const [tried, setTried] = useState(false);
 
   const module = isCustomers ? 'CUSTOMER' : 'SUPPLIER';
@@ -54,6 +61,8 @@ function PersonForm({ kind, existing }: { kind: PartyKind; existing: Party | nul
       address: address.trim() || undefined,
       gstNumber: gst.trim() || undefined,
       ...(isCustomers ? {} : { suppliesType: supplies.trim() || undefined }),
+      // Only Pro sends it, so saving on Free never clears a limit set earlier.
+      ...(isCustomers && limits ? { creditLimit: creditLimit && creditLimit > 0 ? creditLimit : null } : {}),
     });
     leave({ pathname: '/money/people', params: { kind } });
   }
@@ -80,6 +89,20 @@ function PersonForm({ kind, existing }: { kind: PartyKind; existing: Party | nul
       {!isCustomers && (
         <TextField label={t('money.suppliesOptional')} placeholder={t('money.suppliesPlaceholder')} value={supplies} onChangeText={setSupplies} />
       )}
+      {isCustomers &&
+        (limits ? (
+          <NumberField
+            label={t('insights.credit.limitLabel')}
+            value={creditLimit}
+            onChange={setCreditLimit}
+            unit="₹"
+            step={1000}
+            hint={t('insights.credit.limitHint')}
+            testID="person-credit-limit"
+          />
+        ) : (
+          <LockedFeature feature="creditLimits" />
+        ))}
       <TextField label={t('money.addressOptional')} value={address} onChangeText={setAddress} multiline />
       <TextField label={t('money.gstNumberOptional')} value={gst} onChangeText={setGst} autoCapitalize="characters" />
       {!canSave && <Banner tone="warning" message={t('form.noPermission')} />}

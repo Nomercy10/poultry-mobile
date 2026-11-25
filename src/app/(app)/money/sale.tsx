@@ -16,7 +16,7 @@ import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
 import { can } from '@/features/auth/permissions';
 import { useWorkingFarm } from '@/features/farms/use-working-farm';
-import { useDeleteSale, useLastSale, useParties, useSale, useSaveSale, useUpdateSale } from '@/features/money/api';
+import { useDeleteSale, useDues, useLastSale, useParties, useSale, useSaveSale, useUpdateSale } from '@/features/money/api';
 import { SALE_ICONS } from '@/features/money/icons';
 import {
   amountDue,
@@ -24,6 +24,7 @@ import {
   applyPayment,
   composeNotes,
   EGGS_PER_TRAY,
+  overCreditLimit,
   parseNotes,
   type PaymentStatus,
   type Sale,
@@ -64,6 +65,8 @@ function SaleForm({ existing }: { existing: Sale | null }) {
   const farmId = existing?.farmId ?? farm?.id ?? null;
   const save = useSaveSale(existing?.id);
   const customers = useParties('customers');
+  const dues = useDues(null);
+  const plan = usePlan();
   const meta = parseNotes(existing?.notes);
 
   const [type, setType] = useState<SaleType>(existing?.type ?? 'EGG_SALE');
@@ -99,6 +102,13 @@ function SaleForm({ existing }: { existing: Sale | null }) {
   };
   const valid = !errors.quantity && !errors.rate && !errors.customer;
   const unitLabel = unit ? t(`money.units.${unit}`) : '';
+
+  // Credit limit (Pro): warn, don't block, when this sale would leave too much unpaid.
+  const customer = (customers.data ?? []).find((c) => c.id === customerId);
+  const owedNow = (dues.data ?? []).filter((s) => s.customerId === customerId).reduce((sum, s) => sum + amountDue(s), 0);
+  const leavingUnpaid = finalStatus === 'PAID' ? 0 : Math.max(0, total - (finalStatus === 'PARTIAL' ? (paidNow ?? 0) : 0));
+  const overBy =
+    !existing && hasFeature(plan, 'creditLimits') ? overCreditLimit(customer?.creditLimit, owedNow, leavingUnpaid) : 0;
 
   function changeType(next: SaleType) {
     setType(next);
@@ -209,6 +219,12 @@ function SaleForm({ existing }: { existing: Sale | null }) {
         </>
       )}
       {tried && errors.customer && <Banner tone="warning" message={errors.customer} />}
+      {overBy > 0 && customer?.creditLimit && (
+        <Banner
+          tone="warning"
+          message={t('insights.credit.saleOver', { name: customer.name, limit: formatCurrency(customer.creditLimit), over: formatCurrency(overBy) })}
+        />
+      )}
 
       <DateStepper label={t('form.date')} value={day} onChange={(d) => setDay(startOfLocalDay(d))} />
       <TextField label={t('form.notesOptional')} value={notes} onChangeText={setNotes} multiline />
