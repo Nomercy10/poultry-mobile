@@ -16,7 +16,10 @@ type ApiUrlInputs = {
   dev?: boolean;
 };
 
-const LAN_HOST = /^(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)$/;
+// Private IPv4 ranges, plus a Mac's Bonjour name ("Rushikeshs-MacBook-Air.local"),
+// which development builds use when they find the dev server on the network.
+const LAN_HOST =
+  /^(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+|[a-z0-9-]+\.local)$/i;
 
 /**
  * Works out where the backend is.

@@ -1,6 +1,8 @@
 # Native build and release plan (Android + iOS)
 
-**Status:** proposal, waiting for CEO approval. Nothing here has been built yet.
+**Status:** started 25 Nov 2026. The Expo project is on the founder's personal Expo account (`rushikesh10`) for now and moves to the company's Expo organisation later (see [moving-to-company-accounts.md](moving-to-company-accounts.md)). `eas.json`, `expo-dev-client` and `expo-updates` are in place. The app ids are a temporary `com.poultrymobile.test` until the company domain exists.
+
+**Preview builds wait for a staging backend.** Release builds (preview, production) only accept an https server, and the only https server today is production. So until staging exists, phones use the **development build**, which talks to the demo backend on the laptop over the home Wi-Fi.
 
 The app is already React Native (Expo SDK 58), so the same code runs on Android and iOS. "Building for iOS and Android" therefore means three things:
 
