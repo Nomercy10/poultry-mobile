@@ -90,6 +90,9 @@ export default function SimpleHome() {
             testID="tile-vaccine"
           />
         )}
+        {can(user, 'REVENUE', 'CREATE') && (
+          <BigTile label={t('simple.tiles.sale')} icon="cash-plus" onPress={() => router.push('/simple/sale')} testID="tile-sale" />
+        )}
         <BigTile label={t('simple.tiles.me')} icon="account-circle-outline" onPress={() => router.push('/simple/me')} testID="tile-me" />
       </View>
 

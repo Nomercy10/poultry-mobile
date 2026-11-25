@@ -72,6 +72,15 @@ CI runs all three on every pull request (`.github/workflows/ci.yml`).
   - Flows: eggs, dead birds, feed used, vaccine given.
 - **Settings:** owners and workers can switch between Simple and Detailed (More → Account, or Me in Simple mode). The choice is saved per user on the phone.
 
-**Next:** 30-day trends, then M2 (sales, expenses, customers, suppliers). Recorded voice prompts, Telugu and Tamil are in the [languages spec](docs/languages-and-easy-ui.md).
+**M2, part 1 (Money basics) is done:**
+- **Money screen** (More → Money, or Quick add): sales, expenses and profit or loss for each month, with the biggest costs shown first.
+- **Sales:** eggs, birds, manure or other. You choose the unit (tray or egg, kg or bird, bag or trolley), and the price of the last sale is filled in for you. A sale can be paid, part paid or not paid.
+- **Dues:** what each customer owes, grouped by age (up to 30 days, 31–60 days, over 60 days). You can record a payment, or send a reminder on WhatsApp that you then send yourself. Automatic reminders are shown as a Pro feature.
+- **Expenses:** 12 categories, payment mode, who was paid (with supplier suggestions), GST and bill number.
+- **Customers and suppliers:** a list, plus add and edit.
+- **Simple mode:** a Sale tile (what, how many, price for one, paid or later, then save with Undo). It shows only for people allowed to record sales.
+- The backend has no columns yet for the amount paid on part-paid sales or for the unit. The app keeps both as plain first lines in the sale's notes (`Paid so far: ₹500`, `Unit: TRAY`) until the backend change in M4.
+
+**Next (M2, part 2):** the smart finance features the CEO picked on 2026-11-25: cash forecast for 30, 60 and 90 days; feed runway and reorder planner; late payers and credit limits on top of dues by age; renewals calendar; tax pack for the CA. Then 30-day trends. Recorded voice prompts, Telugu and Tamil are in the [languages spec](docs/languages-and-easy-ui.md).
 
 Moving the code and accounts to the company later is planned in [docs/moving-to-company-accounts.md](docs/moving-to-company-accounts.md).

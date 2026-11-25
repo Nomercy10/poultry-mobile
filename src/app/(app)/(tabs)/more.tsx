@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { router } from 'expo-router';
+import { type Href, router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -11,7 +11,7 @@ import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Section } from '@/components/ui/section';
 import { Text } from '@/components/ui/text';
-import { moreSections } from '@/features/navigation/menu';
+import { type MoreItemKey, moreSections } from '@/features/navigation/menu';
 import { usePlan } from '@/features/plans/use-plan';
 import { useUiMode } from '@/features/settings/use-ui-mode';
 import { languageInfo } from '@/i18n/languages';
@@ -19,6 +19,16 @@ import { confirm } from '@/lib/confirm';
 import { useAuth } from '@/store/auth';
 import { radius, space } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
+
+/** Screens that exist so far; the rest show "Soon". */
+const MORE_ROUTES: Partial<Record<MoreItemKey, Href>> = {
+  inventory: '/inventory',
+  revenue: { pathname: '/money', params: { tab: 'sales' } },
+  expenses: { pathname: '/money', params: { tab: 'expenses' } },
+  outstanding: { pathname: '/money', params: { tab: 'dues' } },
+  customers: { pathname: '/money/people', params: { kind: 'customers' } },
+  suppliers: { pathname: '/money/people', params: { kind: 'suppliers' } },
+};
 
 export default function MoreScreen() {
   const { t, i18n } = useTranslation();
@@ -84,15 +94,19 @@ export default function MoreScreen() {
 
       {sections.map((section) => (
         <Section key={section.key} title={t(`more.${section.key}`)}>
-          {section.items.map((item) => (
-            <ListRow
-              key={item.key}
-              title={t(`more.${item.key}`)}
-              icon={item.icon}
-              badge={item.key === 'inventory' ? undefined : t('common.soon')}
-              onPress={item.key === 'inventory' ? () => router.push('/inventory') : undefined}
-            />
-          ))}
+          {section.items.map((item) => {
+            const href = MORE_ROUTES[item.key];
+            return (
+              <ListRow
+                key={item.key}
+                title={t(`more.${item.key}`)}
+                icon={item.icon}
+                badge={href ? undefined : t('common.soon')}
+                onPress={href ? () => router.push(href) : undefined}
+                testID={`more-${item.key}`}
+              />
+            );
+          })}
         </Section>
       ))}
 
