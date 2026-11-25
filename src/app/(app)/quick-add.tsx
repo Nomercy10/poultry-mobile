@@ -22,8 +22,8 @@ const ROUTES: Record<QuickAddKey, Href | null> = {
   weight: { pathname: '/pick', params: { for: 'weight' } },
   feedPurchase: '/feed/new',
   newBatch: '/batches/new',
-  sale: null, // M2
-  expense: null, // M2
+  sale: '/money/sale',
+  expense: '/money/expense',
 };
 
 export default function QuickAddSheet() {

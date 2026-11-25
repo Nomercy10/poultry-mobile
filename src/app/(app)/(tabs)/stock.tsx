@@ -131,6 +131,9 @@ function FeedPanel() {
       {can(user, 'FEED', 'CREATE') && (
         <Button label={t('feed.addPurchase')} icon="plus" variant="secondary" onPress={() => router.push('/feed/new')} />
       )}
+      {items.length > 0 && (
+        <ListRow icon="calendar-clock" title={t('insights.feed.title')} subtitle={t('insights.feed.linkHint')} onPress={() => router.push('/feed/plan')} testID="feed-plan" />
+      )}
       {feed.isError && (
         <Banner message={errorMessage(feed.error, t)} actionLabel={t('common.retry')} onAction={() => void feed.refetch()} />
       )}

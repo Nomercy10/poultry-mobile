@@ -13,7 +13,8 @@ export type PermissionModule =
   | 'SETTINGS'
   | 'USER'
   | 'CUSTOMER'
-  | 'SUPPLIER';
+  | 'SUPPLIER'
+  | 'RENEWAL';
 
 export type PermissionAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'EXPORT' | 'PRINT';
 

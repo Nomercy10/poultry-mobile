@@ -4,6 +4,8 @@ import { can } from '@/features/auth/permissions';
 import { api } from '@/lib/api/client';
 import { useAuth } from '@/store/auth';
 
+import type { FeedUseRow } from './runway';
+
 export type FeedUnit = 'KG' | 'BAG' | 'LITRE' | 'TON';
 export const FEED_UNITS: FeedUnit[] = ['KG', 'BAG', 'LITRE', 'TON'];
 
@@ -90,5 +92,23 @@ export function useRecordFeedUse(feedId: string) {
     mutationFn: (input: { date: string; quantityUsed: number; notes?: string }) =>
       api.post<FeedConsumption>(`/feed/${feedId}/consumption`, input),
     onSuccess: invalidate,
+  });
+}
+
+/** Feed used per day over the last `days` days, from the server's feed-consumption report. */
+export function useFeedUsage(farmId: string | null, days: number) {
+  const user = useAuth((s) => s.user);
+  return useQuery({
+    queryKey: ['feed', 'usage', farmId ?? 'all', days],
+    queryFn: ({ signal }) => {
+      const from = new Date();
+      from.setDate(from.getDate() - days);
+      from.setHours(0, 0, 0, 0);
+      return api.get<FeedUseRow[]>('/reports/feed-consumption', {
+        query: { format: 'json', farmId: farmId ?? undefined, dateFrom: from.toISOString() },
+        signal,
+      });
+    },
+    enabled: can(user, 'FEED') && can(user, 'REPORT'),
   });
 }
