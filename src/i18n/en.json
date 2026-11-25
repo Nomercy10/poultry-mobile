@@ -581,7 +581,7 @@
       "cashTodayHint": "Cash plus bank balance. Leave it at 0 to see only money in and out.",
       "notEnough_one": "Only {{count}} day of records so far. Keep recording for at least {{min}} days for a better forecast.",
       "notEnough_other": "Only {{count}} days of records so far. Keep recording for at least {{min}} days for a better forecast.",
-      "short": "You may be short by {{amount}} around {{date}}.",
+      "short": "Money may run out around {{date}}. At the lowest point in the next 90 days you could be {{amount}} short.",
       "ok": "Your cash stays above zero for the next 90 days.",
       "ahead": "The next 90 days",
       "nextDays_one": "Next {{count}} day",

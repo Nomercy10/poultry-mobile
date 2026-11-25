@@ -51,7 +51,26 @@ if (!existsSync(path.join(backendDir, 'prisma', 'schema.prisma'))) {
 
 // Already running (another terminal, or a Claude session)? Say so instead of
 // crashing on the busy Postgres port.
+// Only reuse it if it is talking to the demo Postgres. A backend started from
+// the web repo with its own .env would be on the real database, and creating
+// demo accounts there would write test data into it.
+function usesDemoDatabase() {
+  const lsof = (args) => spawnSync('lsof', args, { encoding: 'utf8' }).stdout ?? '';
+  const pids = lsof(['-tiTCP:4000', '-sTCP:LISTEN']).split('\n').filter(Boolean);
+  if (pids.length === 0) return false;
+  const conns = lsof(['-nP', '-a', '-p', pids.join(','), '-iTCP', '-sTCP:ESTABLISHED']);
+  const lines = conns.split('\n').filter((l) => l.includes('->'));
+  return lines.some((l) => l.includes(`:${PG_PORT}`)) && !lines.some((l) => /->[^ ]+:5432\b/.test(l));
+}
+
 if (!process.argv.includes('--reset') && (await waitForBackend('http://localhost:4000', 1500))) {
+  if (!usesDemoDatabase()) {
+    fail(
+      'Something else is running on port 4000 and it is not connected to the demo database.\n' +
+        '  It may be the web backend using its real database. Stop it, then run this again.\n' +
+        '  Nothing was changed.',
+    );
+  }
   const notes = await ensureDemoUsers({ apiUrl: 'http://localhost:4000/api/v1', loginsFile, envFile });
   console.log('\n✔ The demo backend is already running on http://localhost:4000. Nothing to start.');
   if (notes.length) console.log(`  ${notes.join('\n  ')}`);
