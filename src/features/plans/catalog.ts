@@ -16,7 +16,11 @@ export type FeatureKey =
   | 'multiFarmDashboard'
   | 'payroll'
   | 'webDashboard'
-  | 'feedStockAlerts';
+  | 'feedStockAlerts'
+  | 'cashForecast' // cash for the next 30, 60, 90 days
+  | 'feedPlanner' // when to reorder feed, how much, what it costs
+  | 'latePayers' // flags customers who keep paying late
+  | 'taxPack'; // yearly summary and export for the CA
 
 export type PlanLimits = {
   farms: number;
@@ -47,6 +51,10 @@ const PRO_FEATURES: FeatureKey[] = [
   'brandedBills',
   'webDashboard',
   'feedStockAlerts',
+  'cashForecast',
+  'feedPlanner',
+  'latePayers',
+  'taxPack',
 ];
 
 const BUSINESS_FEATURES: FeatureKey[] = [...PRO_FEATURES, 'gstInvoices', 'multiFarmDashboard', 'payroll'];

@@ -68,6 +68,48 @@ export function useSales(farmId: string | null, range: Range) {
   });
 }
 
+/** Most pages a "since" query reads (100 rows each), so a huge history can't stall the phone. */
+const MAX_PAGES = 30;
+
+/** Every row of a list endpoint in a date range, reading page after page. */
+async function fetchAll<T>(path: string, query: Record<string, string | undefined>, signal?: AbortSignal) {
+  const items: T[] = [];
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const r = await api.page<T>(path, { query: { ...query, page, limit: MAX_PAGE, sortOrder: 'desc' }, signal });
+    items.push(...r.items);
+    if (page >= r.meta.totalPages || r.items.length === 0) return { items, complete: true };
+  }
+  return { items, complete: false };
+}
+
+/** All sales in a range (for forecasts and the tax pack), not just the first page. */
+export function useAllSales(farmId: string | null, range: Range) {
+  const user = useAuth((s) => s.user);
+  return useQuery({
+    queryKey: [...moneyKeys.all, 'allSales', farmId ?? 'all', range.dateFrom, range.dateTo],
+    queryFn: ({ signal }) =>
+      fetchAll<Sale>('/revenue', { farmId: farmId ?? undefined, ...range }, signal).then((r) => ({
+        ...r,
+        items: r.items.map(toSale),
+      })),
+    enabled: can(user, 'REVENUE'),
+  });
+}
+
+/** All expenses in a range, not just the first page. */
+export function useAllExpenses(farmId: string | null, range: Range) {
+  const user = useAuth((s) => s.user);
+  return useQuery({
+    queryKey: [...moneyKeys.all, 'allExpenses', farmId ?? 'all', range.dateFrom, range.dateTo],
+    queryFn: ({ signal }) =>
+      fetchAll<Expense>('/expenses', { farmId: farmId ?? undefined, ...range }, signal).then((r) => ({
+        ...r,
+        items: r.items.map(toExpense),
+      })),
+    enabled: can(user, 'EXPENSE'),
+  });
+}
+
 export function useSale(id: string | undefined) {
   const user = useAuth((s) => s.user);
   return useQuery({

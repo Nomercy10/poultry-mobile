@@ -207,6 +207,19 @@ export function duesByCustomer(sales: Sale[], today: Date = new Date()): Custome
     .sort((a, b) => b.due - a.due);
 }
 
+/** Overdue = unpaid for more than 30 days. */
+export const LATE_AFTER_DAYS = 30;
+
+/**
+ * A customer who keeps paying late: two or more sales unpaid for over 30 days,
+ * or any sale unpaid for over 60. The backend doesn't record when a payment was
+ * made, so this looks only at what is still unpaid.
+ */
+export function isLatePayer(group: Pick<CustomerDues, 'sales'>, today: Date = new Date()): boolean {
+  const overdue = group.sales.filter((s) => amountDue(s) > 0 && daysAgo(s.date, today) > LATE_AFTER_DAYS);
+  return overdue.length >= 2 || overdue.some((s) => ageBucket(s.date, today) === 'veryLate');
+}
+
 export function totalByBucket(groups: CustomerDues[]): Record<AgeBucket, number> {
   const out: Record<AgeBucket, number> = { current: 0, late: 0, veryLate: 0 };
   for (const g of groups) {

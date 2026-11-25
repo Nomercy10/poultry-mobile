@@ -3,6 +3,7 @@ import {
   ageBucket,
   amountDue,
   applyPayment,
+  isLatePayer,
   beforeHistory,
   composeNotes,
   duesByCustomer,
@@ -117,4 +118,17 @@ describe('months', () => {
 it('multiplies quantity by rate to paise', () => {
   expect(saleTotal(3, 0.1)).toBe(0.3);
   expect(saleTotal(undefined, 5)).toBe(0);
+});
+
+describe('isLatePayer', () => {
+  const today = new Date(2026, 10, 25);
+  const ago = (days: number) => new Date(2026, 10, 25 - days).toISOString();
+  const unpaid = (days: number) => ({ id: String(days), date: ago(days), total: 100, paymentStatus: 'UNPAID' as const, notes: null });
+  it('flags two sales over 30 days, or one over 60', () => {
+    expect(isLatePayer({ sales: [unpaid(35), unpaid(40)] as never }, today)).toBe(true);
+    expect(isLatePayer({ sales: [unpaid(61)] as never }, today)).toBe(true);
+  });
+  it('does not flag one sale a little late, or recent dues', () => {
+    expect(isLatePayer({ sales: [unpaid(35), unpaid(5)] as never }, today)).toBe(false);
+  });
 });

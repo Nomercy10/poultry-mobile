@@ -23,6 +23,7 @@ import {
   amountDue,
   duesByCustomer,
   type ExpenseCategory,
+  isLatePayer,
   isSameMonth,
   monthRange,
   parseNotes,
@@ -31,7 +32,8 @@ import {
   startOfMonth,
   totalByBucket,
 } from '@/features/money/model';
-import { historyStart } from '@/features/plans/catalog';
+import { hasFeature, historyStart } from '@/features/plans/catalog';
+import { LockedFeature } from '@/features/plans/locked-feature';
 import { usePlan } from '@/features/plans/use-plan';
 import { errorMessage } from '@/lib/api/messages';
 import { formatDay } from '@/lib/dates';
@@ -95,6 +97,29 @@ export default function MoneyScreen() {
       {tab === 'sales' && <SalesPanel range={range} />}
       {tab === 'expenses' && <ExpensesPanel range={range} />}
       {tab === 'dues' && <DuesPanel />}
+      <Section title={t('insights.planAhead')}>
+        {canSales && canExpenses && (
+          <ListRow
+            icon="chart-timeline-variant"
+            title={t('insights.forecast.title')}
+            subtitle={t('insights.forecast.linkHint')}
+            onPress={() => router.push('/money/forecast')}
+            testID="open-forecast"
+          />
+        )}
+        {can(user, 'FEED') && (
+          <ListRow icon="calendar-clock" title={t('insights.feed.title')} subtitle={t('insights.feed.linkHint')} onPress={() => router.push('/feed/plan')} />
+        )}
+        {canSales && canExpenses && (
+          <ListRow
+            icon="file-document-outline"
+            title={t('insights.tax.title')}
+            subtitle={t('insights.tax.linkHint')}
+            onPress={() => router.push('/money/tax-pack')}
+            testID="open-tax-pack"
+          />
+        )}
+      </Section>
       {tab !== 'dues' && !!minMonth && isSameMonth(month, minMonth) && (
         <Text variant="caption" tone="muted" style={styles.center}>
           {t('plans.historyNote', { months: plan.limits.historyMonths })}
@@ -212,6 +237,8 @@ function DuesPanel() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { filterFarmId } = useWorkingFarm();
+  const plan = usePlan();
+  const showLate = hasFeature(plan, 'latePayers');
   const dues = useDues(filterFarmId);
   const groups = duesByCustomer(dues.data ?? []);
   const total = round2(groups.reduce((sum, g) => sum + g.due, 0));
@@ -234,21 +261,26 @@ function DuesPanel() {
         <EmptyState icon="check-decagram-outline" title={t('money.noDues')} message={t('money.noDuesHint')} />
       ) : (
         <Section title={t('money.whoOwes')}>
-          {groups.map((g) => (
-            <ListRow
-              key={g.customerId ?? 'none'}
-              icon="account-cash-outline"
-              title={g.name ?? t('money.noName')}
-              subtitle={t('money.dueSince', { date: formatDay(g.oldest), count: g.sales.length })}
-              value={formatCurrency(g.due)}
-              badge={g.bucket === 'veryLate' ? t('money.age.veryLate') : g.bucket === 'late' ? t('money.age.late') : undefined}
-              badgeTone={g.bucket === 'veryLate' ? 'danger' : 'warning'}
-              onPress={() => router.push({ pathname: '/money/customer', params: { id: g.customerId ?? 'none' } })}
-              testID={`due-${g.customerId ?? 'none'}`}
-            />
-          ))}
+          {groups.map((g) => {
+            const late = showLate && !!g.customerId && isLatePayer(g);
+            const ageBadge = g.bucket === 'veryLate' ? t('money.age.veryLate') : g.bucket === 'late' ? t('money.age.late') : undefined;
+            return (
+              <ListRow
+                key={g.customerId ?? 'none'}
+                icon="account-cash-outline"
+                title={g.name ?? t('money.noName')}
+                subtitle={t('money.dueSince', { date: formatDay(g.oldest), count: g.sales.length })}
+                value={formatCurrency(g.due)}
+                badge={late ? t('insights.latePayer') : ageBadge}
+                badgeTone={late || g.bucket === 'veryLate' ? 'danger' : 'warning'}
+                onPress={() => router.push({ pathname: '/money/customer', params: { id: g.customerId ?? 'none' } })}
+                testID={`due-${g.customerId ?? 'none'}`}
+              />
+            );
+          })}
         </Section>
       )}
+      {!showLate && groups.length > 0 && <LockedFeature feature="latePayers" />}
     </>
   );
 }

@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -13,7 +14,7 @@ import { Text } from '@/components/ui/text';
 import { can } from '@/features/auth/permissions';
 import { useDues, useParties } from '@/features/money/api';
 import { SALE_ICONS } from '@/features/money/icons';
-import { amountDue, duesByCustomer } from '@/features/money/model';
+import { amountDue, duesByCustomer, isLatePayer } from '@/features/money/model';
 import { sendReminder } from '@/features/money/reminder';
 import { hasFeature } from '@/features/plans/catalog';
 import { LockedFeature } from '@/features/plans/locked-feature';
@@ -77,6 +78,7 @@ export default function CustomerDuesScreen() {
               {t('money.dueSince', { date: formatDay(group.oldest), count: group.sales.length })}
             </Text>
           </Card>
+          {customerId && hasFeature(plan, 'latePayers') && isLatePayer(group) && <Banner tone="warning" message={t('insights.latePayerHint')} />}
           <Button label={t('money.sendReminder')} icon="whatsapp" onPress={() => void sendReminder(customer?.phone, message).catch(() => {})} testID="send-reminder" />
           {!hasFeature(plan, 'paymentReminders') && <LockedFeature feature="paymentReminders" />}
           <Section title={t('money.unpaidSales')}>
